@@ -13,6 +13,7 @@ const router = createRouter({
     { path: '/keybinds', component: () => import('./pages/keybinds.vue') },
     { path: '/numeric', component: () => import('./pages/numeric.vue') },
     { path: '/props', component: () => import('./pages/props.vue') },
+    { path: '/huge', component: () => import('./pages/huge.vue') },
   ],
 })
 
