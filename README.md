@@ -66,7 +66,7 @@ document.addEventListener('keydown', onKeydown)
 </script>
 
 <template>
-  <Command.Dialog :open="open" @update:open="open = $event" label="Global Command Menu">
+  <Command.Dialog v-model:open="open" label="Global Command Menu">
     <Command.Input />
     <Command.List>
       <Command.Empty>No results found.</Command.Empty>
@@ -102,7 +102,7 @@ const value = ref('apple')
 </script>
 
 <template>
-  <Command :value="value" @update:value="value = $event">
+  <Command v-model:value="value">
     <Command.Input />
     <Command.List>
       <Command.Item>Orange</Command.Item>
@@ -151,10 +151,10 @@ You can make the arrow keys wrap around the list by setting the `loop` prop:
 
 ### Dialog `[cmdk-dialog]` `[cmdk-overlay]`
 
-Props are forwarded to [Command](#command-cmdk-root). Composes [Reka UI](https://reka-ui.com)'s Dialog component. The overlay is always rendered. Can be controlled with the `open` and `@update:open` props.
+Props are forwarded to [Command](#command-cmdk-root). Composes [Reka UI](https://reka-ui.com)'s Dialog component. The overlay is always rendered. Can be controlled with `v-model:open`.
 
 ```vue
-<Command.Dialog :open="open" @update:open="open = $event">
+<Command.Dialog v-model:open="open">
   ...
 </Command.Dialog>
 ```
@@ -163,10 +163,10 @@ You can provide a `container` prop to specify which element the Dialog should po
 
 ### Input `[cmdk-input]`
 
-All attrs are forwarded to the underlying `input` element. Can be controlled with the `value` and `@update:value` props.
+All attrs are forwarded to the underlying `input` element. Can be controlled with `v-model`.
 
 ```vue
-<Command.Input :value="search" @update:value="search = $event" />
+<Command.Input v-model="search" />
 ```
 
 ### List `[cmdk-list]`
@@ -276,7 +276,7 @@ function onKeydown(e) {
 
 <template>
   <Command @keydown="onKeydown">
-    <Command.Input :value="search" @update:value="search = $event" />
+    <Command.Input v-model="search" />
     <Command.List>
       <template v-if="!page">
         <Command.Item @select="pages = [...pages, 'projects']">Search projects…</Command.Item>
