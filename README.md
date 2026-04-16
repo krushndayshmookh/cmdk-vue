@@ -2,189 +2,171 @@
 <img src="./website/public/og.png" />
 </p>
 
-# ⌘K [![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk)](https://www.npmjs.com/package/cmdk?activeTab=code) [![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)](https://www.npmjs.com/package/cmdk)
+# ⌘K for Vue 3
 
-⌘K is a command menu React component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. ⌘K supports a fully composable API <sup><sup>[How?](/ARCHITECTURE.md)</sup></sup>, so you can wrap items in other components or even as static JSX.
+> A Vue 3 port of [cmdk](https://github.com/pacocoursey/cmdk) — the composable command menu component.
+
+**Original authors:** [Paco Coursey](https://github.com/pacocoursey) and [contributors](https://github.com/pacocoursey/cmdk/graphs/contributors). The core architecture, filtering algorithm, accessibility design, and all fundamental ideas in this library are entirely their work. Please star [the original](https://github.com/dip/cmdk).
+
+**This fork** was created by [Krushn Dayshmookh](https://github.com/krushndayshmookh) with the assistance of [Claude](https://claude.ai) (Anthropic AI). The goal is a line-for-line faithful Vue 3 port — minimal changes, maximum parity.
+
+---
+
+⌘K is a command menu component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. Supports a fully composable API <sup><sup>[How?](/ARCHITECTURE.md)</sup></sup>, so you can wrap items in other components or even as static JSX.
 
 ## Install
 
 ```bash
-pnpm install cmdk
+pnpm install cmdk-vue
 ```
 
 ## Use
 
-```tsx
-import { Command } from 'cmdk'
+```vue
+<script setup>
+import { Command } from 'cmdk-vue'
+</script>
 
-const CommandMenu = () => {
-  return (
-    <Command label="Command Menu">
-      <Command.Input />
-      <Command.List>
-        <Command.Empty>No results found.</Command.Empty>
+<template>
+  <Command label="Command Menu">
+    <Command.Input />
+    <Command.List>
+      <Command.Empty>No results found.</Command.Empty>
 
-        <Command.Group heading="Letters">
-          <Command.Item>a</Command.Item>
-          <Command.Item>b</Command.Item>
-          <Command.Separator />
-          <Command.Item>c</Command.Item>
-        </Command.Group>
+      <Command.Group heading="Letters">
+        <Command.Item>a</Command.Item>
+        <Command.Item>b</Command.Item>
+        <Command.Separator />
+        <Command.Item>c</Command.Item>
+      </Command.Group>
 
-        <Command.Item>Apple</Command.Item>
-      </Command.List>
-    </Command>
-  )
-}
+      <Command.Item>Apple</Command.Item>
+    </Command.List>
+  </Command>
+</template>
 ```
 
 Or in a dialog:
 
-```tsx
-import { Command } from 'cmdk'
+```vue
+<script setup>
+import { ref } from 'vue'
+import { Command } from 'cmdk-vue'
 
-const CommandMenu = () => {
-  const [open, setOpen] = React.useState(false)
+const open = ref(false)
 
-  // Toggle the menu when ⌘K is pressed
-  React.useEffect(() => {
-    const down = (e) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((open) => !open)
-      }
-    }
-
-    document.addEventListener('keydown', down)
-    return () => document.removeEventListener('keydown', down)
-  }, [])
-
-  return (
-    <Command.Dialog open={open} onOpenChange={setOpen} label="Global Command Menu">
-      <Command.Input />
-      <Command.List>
-        <Command.Empty>No results found.</Command.Empty>
-
-        <Command.Group heading="Letters">
-          <Command.Item>a</Command.Item>
-          <Command.Item>b</Command.Item>
-          <Command.Separator />
-          <Command.Item>c</Command.Item>
-        </Command.Group>
-
-        <Command.Item>Apple</Command.Item>
-      </Command.List>
-    </Command.Dialog>
-  )
+function onKeydown(e) {
+  if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault()
+    open.value = !open.value
+  }
 }
+
+document.addEventListener('keydown', onKeydown)
+</script>
+
+<template>
+  <Command.Dialog :open="open" @update:open="open = $event" label="Global Command Menu">
+    <Command.Input />
+    <Command.List>
+      <Command.Empty>No results found.</Command.Empty>
+
+      <Command.Group heading="Letters">
+        <Command.Item>a</Command.Item>
+        <Command.Item>b</Command.Item>
+        <Command.Separator />
+        <Command.Item>c</Command.Item>
+      </Command.Group>
+
+      <Command.Item>Apple</Command.Item>
+    </Command.List>
+  </Command.Dialog>
+</template>
 ```
 
 ## Parts and styling
 
-All parts forward props, including `ref`, to an appropriate element. Each part has a specific data-attribute (starting with `cmdk-`) that can be used for styling.
+All parts forward attrs to an appropriate element. Each part has a specific data-attribute (starting with `cmdk-`) that can be used for styling.
 
 ### Command `[cmdk-root]`
 
-Render this to show the command menu inline, or use [Dialog](#dialog-cmdk-dialog-cmdk-overlay) to render in a elevated context. Can be controlled with the `value` and `onValueChange` props.
+Render this to show the command menu inline, or use [Dialog](#dialog-cmdk-dialog-cmdk-overlay) to render in an elevated context. Can be controlled with the `value` and `onValueChange` props.
 
 > **Note**
 >
 > Values are always trimmed with the [trim()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim) method.
 
-```tsx
-const [value, setValue] = React.useState('apple')
+```vue
+<script setup>
+const value = ref('apple')
+</script>
 
-return (
-  <Command value={value} onValueChange={setValue}>
+<template>
+  <Command :value="value" @update:value="value = $event">
     <Command.Input />
     <Command.List>
       <Command.Item>Orange</Command.Item>
       <Command.Item>Apple</Command.Item>
     </Command.List>
   </Command>
-)
+</template>
 ```
 
 You can provide a custom `filter` function that is called to rank each item. Note that the value will be trimmed.
 
-```tsx
-<Command
-  filter={(value, search) => {
-    if (value.includes(search)) return 1
-    return 0
-  }}
-/>
+```vue
+<Command :filter="(value, search) => (value.includes(search) ? 1 : 0)" />
 ```
 
 A third argument, `keywords`, can also be provided to the filter function. Keywords act as aliases for the item value, and can also affect the rank of the item. Keywords are trimmed.
 
-```tsx
+```vue
 <Command
-  filter={(value, search, keywords) => {
-    const extendValue = value + ' ' + keywords.join(' ')
-    if (extendValue.includes(search)) return 1
-    return 0
-  }}
+  :filter="
+    (value, search, keywords) => {
+      const extendValue = value + ' ' + keywords.join(' ')
+      return extendValue.includes(search) ? 1 : 0
+    }
+  "
 />
 ```
 
 Or disable filtering and sorting entirely:
 
-```tsx
-<Command shouldFilter={false}>
+```vue
+<Command :should-filter="false">
   <Command.List>
-    {filteredItems.map((item) => {
-      return (
-        <Command.Item key={item} value={item}>
-          {item}
-        </Command.Item>
-      )
-    })}
+    <Command.Item v-for="item in filteredItems" :key="item" :value="item">
+      {{ item }}
+    </Command.Item>
   </Command.List>
 </Command>
 ```
 
-You can make the arrow keys wrap around the list (when you reach the end, it goes back to the first item) by setting the `loop` prop:
+You can make the arrow keys wrap around the list by setting the `loop` prop:
 
-```tsx
+```vue
 <Command loop />
 ```
 
 ### Dialog `[cmdk-dialog]` `[cmdk-overlay]`
 
-Props are forwarded to [Command](#command-cmdk-root). Composes Radix UI's Dialog component. The overlay is always rendered. See the [Radix Documentation](https://www.radix-ui.com/docs/primitives/components/dialog) for more information. Can be controlled with the `open` and `onOpenChange` props.
+Props are forwarded to [Command](#command-cmdk-root). Composes [Reka UI](https://reka-ui.com)'s Dialog component. The overlay is always rendered. Can be controlled with the `open` and `@update:open` props.
 
-```tsx
-const [open, setOpen] = React.useState(false)
-
-return (
-  <Command.Dialog open={open} onOpenChange={setOpen}>
-    ...
-  </Command.Dialog>
-)
+```vue
+<Command.Dialog :open="open" @update:open="open = $event">
+  ...
+</Command.Dialog>
 ```
 
-You can provide a `container` prop that accepts an HTML element that is forwarded to Radix UI's Dialog Portal component to specify which element the Dialog should portal into (defaults to `body`). See the [Radix Documentation](https://www.radix-ui.com/docs/primitives/components/dialog#portal) for more information.
-
-```tsx
-const containerElement = React.useRef(null)
-
-return (
-  <>
-    <Command.Dialog container={containerElement.current} />
-    <div ref={containerElement} />
-  </>
-)
-```
+You can provide a `container` prop to specify which element the Dialog should portal into (defaults to `body`).
 
 ### Input `[cmdk-input]`
 
-All props are forwarded to the underlying `input` element. Can be controlled with the `value` and `onValueChange` props.
+All attrs are forwarded to the underlying `input` element. Can be controlled with the `value` and `@update:value` props.
 
-```tsx
-const [search, setSearch] = React.useState('')
-
-return <Command.Input value={search} onValueChange={setSearch} />
+```vue
+<Command.Input :value="search" @update:value="search = $event" />
 ```
 
 ### List `[cmdk-list]`
@@ -213,28 +195,16 @@ To scroll item into view earlier near the edges of the viewport, use scroll-padd
 
 Item that becomes active on pointer enter. You should provide a unique `value` for each item, but it will be automatically inferred from the `.textContent`.
 
-```tsx
-<Command.Item
-  onSelect={(value) => console.log('Selected', value)}
-  // Value is implicity "apple" because of the provided text content
->
+```vue
+<Command.Item @select="(value) => console.log('Selected', value)">
   Apple
 </Command.Item>
 ```
 
-You can also provide a `keywords` prop to help with filtering. Keywords are trimmed.
+You can also provide a `keywords` prop to help with filtering:
 
-```tsx
-<Command.Item keywords={['fruit', 'apple']}>Apple</Command.Item>
-```
-
-```tsx
-<Command.Item
-  onSelect={(value) => console.log('Selected', value)}
-  // Value is implicity "apple" because of the provided text content
->
-  Apple
-</Command.Item>
+```vue
+<Command.Item :keywords="['fruit', 'apple']">Apple</Command.Item>
 ```
 
 You can force an item to always render, regardless of filtering, by passing the `forceMount` prop.
@@ -243,13 +213,13 @@ You can force an item to always render, regardless of filtering, by passing the 
 
 Groups items together with the given `heading` (`[cmdk-group-heading]`).
 
-```tsx
+```vue
 <Command.Group heading="Fruit">
   <Command.Item>Apple</Command.Item>
 </Command.Group>
 ```
 
-Groups will not unmount from the DOM, rather the `hidden` attribute is applied to hide it from view. This may be relevant in your styling.
+Groups will not unmount from the DOM, rather the `hidden` attribute is applied to hide it from view.
 
 You can force a group to always render, regardless of filtering, by passing the `forceMount` prop.
 
@@ -265,217 +235,137 @@ Automatically renders when there are no results for the search query.
 
 You should conditionally render this with `progress` while loading asynchronous items.
 
-```tsx
-const [loading, setLoading] = React.useState(false)
-
-return <Command.List>{loading && <Command.Loading>Hang on…</Command.Loading>}</Command.List>
+```vue
+<Command.List>
+  <Command.Loading v-if="loading">Hang on…</Command.Loading>
+</Command.List>
 ```
 
 ### `useCommandState(state => state.selectedField)`
 
-Hook that composes [`useSyncExternalStore`](https://reactjs.org/docs/hooks-reference.html#usesyncexternalstore). Pass a function that returns a slice of the command menu state to re-render when that slice changes. This hook is provided for advanced use cases and should not be commonly used.
+Composable that returns a computed ref of a slice of command menu state. Pass a selector function. This is provided for advanced use cases and should not be commonly used.
 
-A good use case would be to render a more detailed empty state, like so:
-
-```tsx
+```vue
+<script setup>
+import { useCommandState } from 'cmdk-vue'
 const search = useCommandState((state) => state.search)
-return <Command.Empty>No results found for "{search}".</Command.Empty>
+</script>
+
+<template>
+  <Command.Empty>No results found for "{{ search }}".</Command.Empty>
+</template>
 ```
 
 ## Examples
 
-Code snippets for common use cases.
-
 ### Nested items
 
-Often selecting one item should navigate deeper, with a more refined set of items. For example selecting "Change theme…" should show new items "Dark theme" and "Light theme". We call these sets of items "pages", and they can be implemented with simple state:
+```vue
+<script setup>
+const search = ref('')
+const pages = ref([])
+const page = computed(() => pages.value[pages.value.length - 1])
 
-```tsx
-const ref = React.useRef(null)
-const [open, setOpen] = React.useState(false)
-const [search, setSearch] = React.useState('')
-const [pages, setPages] = React.useState([])
-const page = pages[pages.length - 1]
+function onKeydown(e) {
+  if (e.key === 'Escape' || (e.key === 'Backspace' && !search.value)) {
+    e.preventDefault()
+    pages.value = pages.value.slice(0, -1)
+  }
+}
+</script>
 
-return (
-  <Command
-    onKeyDown={(e) => {
-      // Escape goes to previous page
-      // Backspace goes to previous page when search is empty
-      if (e.key === 'Escape' || (e.key === 'Backspace' && !search)) {
-        e.preventDefault()
-        setPages((pages) => pages.slice(0, -1))
-      }
-    }}
-  >
-    <Command.Input value={search} onValueChange={setSearch} />
+<template>
+  <Command @keydown="onKeydown">
+    <Command.Input :value="search" @update:value="search = $event" />
     <Command.List>
-      {!page && (
-        <>
-          <Command.Item onSelect={() => setPages([...pages, 'projects'])}>Search projects…</Command.Item>
-          <Command.Item onSelect={() => setPages([...pages, 'teams'])}>Join a team…</Command.Item>
-        </>
-      )}
-
-      {page === 'projects' && (
-        <>
-          <Command.Item>Project A</Command.Item>
-          <Command.Item>Project B</Command.Item>
-        </>
-      )}
-
-      {page === 'teams' && (
-        <>
-          <Command.Item>Team 1</Command.Item>
-          <Command.Item>Team 2</Command.Item>
-        </>
-      )}
+      <template v-if="!page">
+        <Command.Item @select="pages = [...pages, 'projects']">Search projects…</Command.Item>
+        <Command.Item @select="pages = [...pages, 'teams']">Join a team…</Command.Item>
+      </template>
+      <template v-if="page === 'projects'">
+        <Command.Item>Project A</Command.Item>
+        <Command.Item>Project B</Command.Item>
+      </template>
+      <template v-if="page === 'teams'">
+        <Command.Item>Team 1</Command.Item>
+        <Command.Item>Team 2</Command.Item>
+      </template>
     </Command.List>
   </Command>
-)
+</template>
 ```
 
 ### Show sub-items when searching
 
-If your items have nested sub-items that you only want to reveal when searching, render based on the search state:
+```vue
+<script setup>
+import { useCommandState } from 'cmdk-vue'
 
-```tsx
-const SubItem = (props) => {
-  const search = useCommandState((state) => state.search)
-  if (!search) return null
-  return <Command.Item {...props} />
-}
-
-return (
-  <Command>
-    <Command.Input />
-    <Command.List>
-      <Command.Item>Change theme…</Command.Item>
-      <SubItem>Change theme to dark</SubItem>
-      <SubItem>Change theme to light</SubItem>
-    </Command.List>
-  </Command>
-)
+const SubItem = defineComponent({
+  setup(props, { slots }) {
+    const search = useCommandState((state) => state.search)
+    return () => (search.value ? h(CommandItem, props, slots) : null)
+  },
+})
+</script>
 ```
 
 ### Asynchronous results
 
-Render the items as they become available. Filtering and sorting will happen automatically.
+```vue
+<script setup>
+const loading = ref(false)
+const items = ref([])
 
-```tsx
-const [loading, setLoading] = React.useState(false)
-const [items, setItems] = React.useState([])
+onMounted(async () => {
+  loading.value = true
+  items.value = await api.get('/dictionary')
+  loading.value = false
+})
+</script>
 
-React.useEffect(() => {
-  async function getItems() {
-    setLoading(true)
-    const res = await api.get('/dictionary')
-    setItems(res)
-    setLoading(false)
-  }
-
-  getItems()
-}, [])
-
-return (
+<template>
   <Command>
     <Command.Input />
     <Command.List>
-      {loading && <Command.Loading>Fetching words…</Command.Loading>}
-      {items.map((item) => {
-        return (
-          <Command.Item key={`word-${item}`} value={item}>
-            {item}
-          </Command.Item>
-        )
-      })}
+      <Command.Loading v-if="loading">Fetching words…</Command.Loading>
+      <Command.Item v-for="item in items" :key="item" :value="item">
+        {{ item }}
+      </Command.Item>
     </Command.List>
   </Command>
-)
-```
-
-### Use inside Popover
-
-We recommend using the [Radix UI popover](https://www.radix-ui.com/docs/primitives/components/popover) component. ⌘K relies on the Radix UI Dialog component, so this will reduce your bundle size a bit due to shared dependencies.
-
-```bash
-$ pnpm install @radix-ui/react-popover
-```
-
-Render `Command` inside of the popover content:
-
-```tsx
-import * as Popover from '@radix-ui/react-popover'
-
-return (
-  <Popover.Root>
-    <Popover.Trigger>Toggle popover</Popover.Trigger>
-
-    <Popover.Content>
-      <Command>
-        <Command.Input />
-        <Command.List>
-          <Command.Item>Apple</Command.Item>
-        </Command.List>
-      </Command>
-    </Popover.Content>
-  </Popover.Root>
-)
+</template>
 ```
 
 ### Drop in stylesheets
 
-You can find global stylesheets to drop in as a starting point for styling. See [website/styles/cmdk](website/styles/cmdk) for examples.
+See [website/styles/cmdk](website/styles/cmdk) for example stylesheets.
 
 ## FAQ
 
-**Accessible?** Yes. Labeling, aria attributes, and DOM ordering tested with Voice Over and Chrome DevTools. [Dialog](#dialog-cmdk-dialog-cmdk-overlay) composes an accessible Dialog implementation.
+**Accessible?** Yes. Labeling, aria attributes, and DOM ordering tested with Voice Over and Chrome DevTools.
 
-**Virtualization?** No. Good performance up to 2,000-3,000 items, though. Read below to bring your own.
+**Virtualization?** No. Good performance up to 2,000–3,000 items.
 
-**Filter/sort items manually?** Yes. Pass `shouldFilter={false}` to [Command](#command-cmdk-root). Better memory usage and performance. Bring your own virtualization this way.
+**Filter/sort items manually?** Yes. Pass `:should-filter="false"` to Command.
 
-**React 18 safe?** Yes, required. Uses React 18 hooks like `useId` and `useSyncExternalStore`.
+**Vue 3?** Yes, required. Uses Vue 3 reactivity and composables.
 
 **Unstyled?** Yes, use the listed CSS selectors.
 
-**Hydration mismatch?** No, likely a bug in your code. Ensure the `open` prop to `Command.Dialog` is `false` on the server.
-
-**React strict mode safe?** Yes. Open an issue if you notice an issue.
-
-**Weird/wrong behavior?** Make sure your `Command.Item` has a `key` and unique `value`.
-
-**Concurrent mode safe?** Maybe, but concurrent mode is not yet real. Uses risky approaches like manual DOM ordering.
-
-**React server component?** No, it's a client component.
-
-**Listen for ⌘K automatically?** No, do it yourself to have full control over keybind context.
-
-**React Native?** No, and no plans to support it. If you build a React Native version, let us know and we'll link your repository here.
+**React strict mode equivalent?** Not applicable — Vue has no equivalent concern.
 
 ## History
 
-Written in 2019 by Paco ([@pacocoursey](https://twitter.com/pacocoursey)) to see if a composable combobox API was possible. Used for the Vercel command menu and autocomplete by Rauno ([@raunofreiberg](https://twitter.com/raunofreiberg)) in 2020. Re-written independently in 2022 with a simpler and more performant approach. Ideas and help from Shu ([@shuding\_](https://twitter.com/shuding_)).
+The original ⌘K was written in 2019 by Paco ([@pacocoursey](https://twitter.com/pacocoursey)). Used for the Vercel command menu and autocomplete by Rauno ([@raunofreiberg](https://twitter.com/raunofreiberg)) in 2020. Re-written in 2022 with a simpler and more performant approach. Ideas and help from Shu ([@shuding\_](https://twitter.com/shuding_)).
 
-[use-descendants](https://github.com/pacocoursey/use-descendants) was extracted from the 2019 version.
+This Vue 3 port was created in 2024–2025 by [Krushn Dayshmookh](https://github.com/krushndayshmookh) with AI assistance (Claude, Anthropic). The architecture, scoring algorithm, and all core ideas remain those of the original authors.
 
 ## Testing
-
-First, install dependencies and Playwright browsers:
 
 ```bash
 pnpm install
 pnpm playwright install
-```
-
-Then ensure you've built the library:
-
-```bash
 pnpm build
-```
-
-Then run the tests using your local build against real browser engines:
-
-```bash
 pnpm test
 ```
