@@ -9,6 +9,11 @@
 //   - composeRefs(ref, forwardedRef) → single template ref + defineExpose
 //   - composeRefs(height, context.listInnerRef) → template ref assigned to context.listInnerRef
 //   - Primitive.div → plain <div>
+//   - inheritAttrs: false — attrs applied manually via v-bind to prevent duplication
+
+export default {
+  inheritAttrs: false,
+}
 </script>
 
 <script setup lang="ts">

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Command } from 'cmdk-vue'
+// Vue's template proxy routes bare `window` through _ctx (undefined).
+// Expose as a setup variable so the template can set window.onSelect.
+const w = window
 </script>
 
 <template>
@@ -8,11 +11,7 @@ import { Command } from 'cmdk-vue'
       <Command.Input placeholder="Search…" class="input" />
       <Command.List class="list">
         <Command.Empty class="empty">No results.</Command.Empty>
-        <Command.Item
-          :keywords="['key']"
-          class="item"
-          @select="() => ((window as any).onSelect = 'Item selected')"
-        >
+        <Command.Item :keywords="['key']" class="item" @select="() => ((w as any).onSelect = 'Item selected')">
           Item
         </Command.Item>
         <Command.Item value="xxx" class="item">Value</Command.Item>

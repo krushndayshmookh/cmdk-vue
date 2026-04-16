@@ -100,6 +100,12 @@ export type ItemProps = {
   keywords?: string[]
   /** Whether this item is forcibly rendered regardless of filtering. */
   forceMount?: boolean
+  /**
+   * Event handler called when this item is selected (via click or keyboard Enter).
+   * Uses the prop-callback pattern so it works reliably with both
+   * `@select="handler"` and `:on-select="handler"` syntax.
+   */
+  onSelect?: (value: string) => void
 }
 
 export type GroupProps = {

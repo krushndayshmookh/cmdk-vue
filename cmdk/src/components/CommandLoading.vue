@@ -5,6 +5,11 @@
 // Changes from the React original:
 //   - Primitive.div → plain <div>
 //   - SlottableWithNestedChildren wrapper div → plain <div aria-hidden>
+//   - inheritAttrs: false — attrs applied manually via v-bind to prevent duplication
+
+export default {
+  inheritAttrs: false,
+}
 </script>
 
 <script setup lang="ts">

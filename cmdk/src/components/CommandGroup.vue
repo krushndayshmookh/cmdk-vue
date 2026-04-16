@@ -13,6 +13,11 @@
 //   - heading?: React.ReactNode → heading?: string + named slot 'heading'
 //   - Primitive.div → plain <div>
 //   - hidden={render ? undefined : true} → :hidden="!render || undefined"
+//   - inheritAttrs: false — attrs applied manually via v-bind to prevent duplication
+
+export default {
+  inheritAttrs: false,
+}
 </script>
 
 <script setup lang="ts">
@@ -72,13 +77,7 @@ defineExpose({ el: groupRef })
 </script>
 
 <template>
-  <div
-    ref="groupRef"
-    v-bind="$attrs"
-    cmdk-group=""
-    role="presentation"
-    :hidden="!render || undefined"
-  >
+  <div ref="groupRef" v-bind="$attrs" cmdk-group="" role="presentation" :hidden="!render || undefined">
     <!-- heading: accepts either the heading prop (string) or a named slot -->
     <div
       v-if="props.heading || $slots.heading"
@@ -89,11 +88,7 @@ defineExpose({ el: groupRef })
     >
       <slot name="heading">{{ props.heading }}</slot>
     </div>
-    <div
-      cmdk-group-items=""
-      role="group"
-      :aria-labelledby="(props.heading || $slots.heading) ? headingId : undefined"
-    >
+    <div cmdk-group-items="" role="group" :aria-labelledby="props.heading || $slots.heading ? headingId : undefined">
       <slot />
     </div>
   </div>

@@ -14,6 +14,11 @@
 //   - JSX → Vue SFC template
 // All business logic (filterItems, sort, selectFirstItem, keyboard handler,
 // scrollSelectedIntoView, etc.) is copied verbatim from the original.
+//   - inheritAttrs: false — attrs applied manually via v-bind to prevent duplication
+
+export default {
+  inheritAttrs: false,
+}
 </script>
 
 <script setup lang="ts">
@@ -93,6 +98,21 @@ watch(
     }
   },
   { flush: 'post' },
+)
+
+// Search change — mirrors the `key === 'search'` branch inside setState in the
+// original React component.  filterItems() + sort() must run synchronously
+// (before Vue flushes DOM) so the `render` computed on each item sees the
+// updated scores during the same microtask.  selectFirstItem() needs the DOM
+// to be settled (items removed/added by v-if) so we schedule it for next tick.
+watch(
+  () => state.search,
+  () => {
+    filterItems()
+    sort()
+    scheduleLayoutEffect(1, selectFirstItem)
+  },
+  { flush: 'sync' },
 )
 
 // ---------------------------------------------------------------------------
@@ -244,11 +264,7 @@ function updateSelectedByItem(change: 1 | -1) {
 
   if (props.loop) {
     newSelected =
-      index + change < 0
-        ? items[items.length - 1]
-        : index + change === items.length
-          ? items[0]
-          : items[index + change]
+      index + change < 0 ? items[items.length - 1] : index + change === items.length ? items[0] : items[index + change]
   }
 
   if (newSelected) store.setState('value', newSelected.getAttribute(VALUE_ATTR))
@@ -260,10 +276,7 @@ function updateSelectedByGroup(change: 1 | -1) {
   let item: HTMLElement | undefined
 
   while (group && !item) {
-    group =
-      change > 0
-        ? findNextSibling(group, GROUP_SELECTOR)
-        : findPreviousSibling(group, GROUP_SELECTOR)
+    group = change > 0 ? findNextSibling(group, GROUP_SELECTOR) : findPreviousSibling(group, GROUP_SELECTOR)
     item = group?.querySelector(VALID_ITEM_SELECTOR) as HTMLElement | undefined
   }
 
@@ -364,14 +377,19 @@ const context: Context = {
     })
 
     return () => {
+      // Capture the item's registered value BEFORE deleting it.
+      // At onUnmounted time the DOM element may already be removed, so we
+      // cannot rely on getSelectedItem() to identify the previously-selected
+      // item.  Comparing state.value against the last-known value is the
+      // approach used in the original React source.
+      const itemValue = ids.get(id)?.value
       ids.delete(id)
       allItems.delete(id)
       state.filtered.items.delete(id)
-      const selectedItem = getSelectedItem()
 
       scheduleLayoutEffect(4, () => {
         filterItems()
-        if (selectedItem?.getAttribute('id') === id) selectFirstItem()
+        if (state.value === itemValue) selectFirstItem()
         store.emit()
       })
     }
@@ -427,19 +445,8 @@ defineExpose({ el: rootRef })
 </script>
 
 <template>
-  <div
-    ref="rootRef"
-    v-bind="$attrs"
-    cmdk-root=""
-    :tabindex="-1"
-    @keydown="onKeydown"
-  >
-    <label
-      cmdk-label=""
-      :for="inputId"
-      :id="labelId"
-      :style="srOnlyStyles"
-    >{{ props.label }}</label>
+  <div ref="rootRef" v-bind="$attrs" cmdk-root="" :tabindex="-1" @keydown="onKeydown">
+    <label cmdk-label="" :for="inputId" :id="labelId" :style="srOnlyStyles">{{ props.label }}</label>
     <slot />
   </div>
 </template>

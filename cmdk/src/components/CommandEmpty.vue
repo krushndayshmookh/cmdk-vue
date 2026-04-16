@@ -6,6 +6,11 @@
 //   - useCmdk(selector) → computed from reactive store
 //   - return null → v-if on root element
 //   - Primitive.div → plain <div>
+//   - inheritAttrs: false — attrs applied manually via v-bind to prevent duplication
+
+export default {
+  inheritAttrs: false,
+}
 </script>
 
 <script setup lang="ts">
@@ -19,12 +24,7 @@ const render = computed(() => store.snapshot().filtered.count === 0)
 </script>
 
 <template>
-  <div
-    v-if="render"
-    v-bind="$attrs"
-    cmdk-empty=""
-    role="presentation"
-  >
+  <div v-if="render" v-bind="$attrs" cmdk-empty="" role="presentation">
     <slot />
   </div>
 </template>

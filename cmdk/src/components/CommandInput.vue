@@ -9,6 +9,11 @@
 //   - Primitive.input → plain <input>
 //   - onChange → @input / v-model
 //   - Controlled v-model support via modelValue prop + update:modelValue emit
+//   - inheritAttrs: false — attrs applied manually via v-bind to prevent duplication
+
+export default {
+  inheritAttrs: false,
+}
 </script>
 
 <script setup lang="ts">
@@ -44,7 +49,7 @@ watch(
 )
 
 const isControlled = computed(() => props.value != null || props.modelValue != null)
-const inputValue = computed(() => (isControlled.value ? (props.value ?? props.modelValue ?? '') : search.value))
+const inputValue = computed(() => (isControlled.value ? props.value ?? props.modelValue ?? '' : search.value))
 
 function onInput(e: Event) {
   const val = (e.target as HTMLInputElement).value
