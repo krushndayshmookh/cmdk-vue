@@ -359,7 +359,7 @@ See [website/styles/cmdk](website/styles/cmdk) for example stylesheets.
 
 The original ⌘K was written in 2019 by Paco ([@pacocoursey](https://twitter.com/pacocoursey)). Used for the Vercel command menu and autocomplete by Rauno ([@raunofreiberg](https://twitter.com/raunofreiberg)) in 2020. Re-written in 2022 with a simpler and more performant approach. Ideas and help from Shu ([@shuding\_](https://twitter.com/shuding_)).
 
-This Vue 3 port was created in 2024–2025 by [Krushn Dayshmookh](https://github.com/krushndayshmookh) with AI assistance (Claude, Anthropic). The architecture, scoring algorithm, and all core ideas remain those of the original authors.
+This Vue 3 port was created in 2026 by [Krushn Dayshmookh](https://github.com/krushndayshmookh) with AI assistance (Claude, Anthropic). The architecture, scoring algorithm, and all core ideas remain those of the original authors.
 
 ## Testing
 
