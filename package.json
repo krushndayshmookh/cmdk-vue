@@ -1,5 +1,5 @@
 {
-  "name": "cmdk-root",
+  "name": "cmdk-vue-root",
   "private": true,
   "scripts": {
     "build": "pnpm -F cmdk-vue build",

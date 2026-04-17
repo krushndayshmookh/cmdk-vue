@@ -1,5 +1,5 @@
 {
-  "name": "cmdk-tests",
+  "name": "cmdk-vue-tests",
   "version": "0.0.0",
   "private": true,
   "scripts": {

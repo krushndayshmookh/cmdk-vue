@@ -38,7 +38,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/krushndayshmookh/cmdk-vue.git",
-    "directory": "cmdk"
+    "directory": "cmdk-vue"
   },
   "bugs": {
     "url": "https://github.com/krushndayshmookh/cmdk-vue/issues"
