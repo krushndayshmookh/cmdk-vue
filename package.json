@@ -4,8 +4,8 @@
   "scripts": {
     "build": "pnpm -F cmdk-vue build",
     "dev": "pnpm -F cmdk-vue build --watch",
-    "website": "pnpm -F cmdk-website dev",
-    "testsite": "pnpm -F cmdk-tests dev",
+    "website": "pnpm -F cmdk-vue-website dev",
+    "testsite": "pnpm -F cmdk-vue-tests dev",
     "format": "prettier '**/*.{js,jsx,ts,tsx,vue,json,md,mdx,css,scss,yaml,yml}' --write",
     "preinstall": "npx only-allow pnpm",
     "test:format": "prettier '**/*.{js,jsx,ts,tsx,vue,json,md,mdx,css,scss,yaml,yml}' --check",

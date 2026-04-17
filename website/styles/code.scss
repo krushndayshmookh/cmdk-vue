@@ -1,0 +1,143 @@
+/* prism base — font/layout only; color is on .code-block__root so it
+   inherits into all token spans and bare text nodes alike */
+code[class*='language-'],
+pre[class*='language-'] {
+  font-family: Menlo, monospace;
+  font-size: 12px;
+  background: none;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  tab-size: 4;
+  hyphens: none;
+}
+
+.token.comment,
+.token.block-comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--gray9);
+}
+
+.token.punctuation,
+.token.operator {
+  color: var(--gray9);
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.function-name,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: var(--gray12);
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.function,
+.token.builtin,
+.token.inserted {
+  color: var(--gray12);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword,
+.token.class-name {
+  color: var(--gray10);
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: var(--gray11);
+}
+
+/* Code block container */
+.code-block__root {
+  border-radius: 12px;
+  padding: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--gray6);
+  position: relative;
+  line-height: 16px;
+  background: var(--gray2);
+  color: var(--gray12);
+  white-space: pre-wrap;
+  box-shadow: rgb(0 0 0 / 10%) 0px 5px 30px -5px;
+  margin: 0;
+  overflow: auto;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--grayA3);
+    border-radius: 8px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: var(--gray11);
+    cursor: copy;
+    transition: color 150ms ease, background 150ms ease, transform 150ms ease;
+
+    &:hover {
+      color: var(--gray12);
+      background: var(--grayA4);
+    }
+
+    &:active {
+      color: var(--gray12);
+      background: var(--grayA5);
+      transform: scale(0.96);
+    }
+  }
+}
+
+// Shine bar — only visible in dark mode
+// Covers both: .dark class (VueUse toggle) and OS dark preference
+.code-block__shine {
+  height: 1px;
+  position: absolute;
+  top: -1px;
+  width: 97%;
+  z-index: -1;
+}
+
+.dark .code-block__shine {
+  background: linear-gradient(
+    90deg,
+    rgba(56, 189, 248, 0),
+    var(--gray5) 20%,
+    var(--gray9) 67.19%,
+    rgba(236, 72, 153, 0)
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  .code-block__shine {
+    background: linear-gradient(
+      90deg,
+      rgba(56, 189, 248, 0),
+      var(--gray5) 20%,
+      var(--gray9) 67.19%,
+      rgba(236, 72, 153, 0)
+    );
+  }
+}
+
+@media (max-width: 640px) {
+  .code-block__root code {
+    font-size: 11px;
+  }
+}
