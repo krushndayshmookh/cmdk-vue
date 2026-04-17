@@ -11,7 +11,7 @@ export default defineConfig({
     // Resolve cmdk-vue directly from source during development and testing.
     // This avoids needing a build step before running tests.
     alias: {
-      'cmdk-vue': resolve(__dirname, '../cmdk/src/index.ts'),
+      'cmdk-vue': resolve(__dirname, '../cmdk-vue/src/index.ts'),
     },
   },
 })
