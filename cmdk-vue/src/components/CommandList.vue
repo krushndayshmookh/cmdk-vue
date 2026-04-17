@@ -61,7 +61,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   cancelAnimationFrame(animationFrame)
-  observer?.unobserve(sizerRef.value!)
+  if (sizerRef.value) observer?.unobserve(sizerRef.value)
 })
 </script>
 
