@@ -10,12 +10,7 @@
 </script>
 
 <script setup lang="ts">
-import {
-  DialogRoot,
-  DialogPortal,
-  DialogOverlay,
-  DialogContent,
-} from 'reka-ui'
+import { DialogRoot, DialogPortal, DialogOverlay, DialogContent } from 'reka-ui'
 import Command from './Command.vue'
 import type { DialogProps } from '../types'
 
@@ -36,11 +31,7 @@ const emit = defineEmits<{
   <DialogRoot :open="props.open" @update:open="emit('update:open', $event)">
     <DialogPortal :to="props.container ?? 'body'">
       <DialogOverlay cmdk-overlay="" :class="props.overlayClassName" />
-      <DialogContent
-        cmdk-dialog=""
-        :aria-label="props.label"
-        :class="props.contentClassName"
-      >
+      <DialogContent cmdk-dialog="" :aria-label="props.label" :class="props.contentClassName">
         <Command
           :label="props.label"
           :should-filter="props.shouldFilter"
