@@ -8,9 +8,7 @@ const forceMount = ref(false)
 
 <template>
   <div>
-    <button data-testid="forceMount" @click="forceMount = !forceMount">
-      Force mount Group Letters
-    </button>
+    <button data-testid="forceMount" @click="forceMount = !forceMount">Force mount Group Letters</button>
 
     <Command>
       <Command.Input placeholder="Search…" v-model="search" />

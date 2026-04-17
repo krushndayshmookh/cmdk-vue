@@ -33,11 +33,7 @@ const filter = computed(() => (useCustomFilter.value ? customFilter : undefined)
     <button data-testid="controlledValue" @click="value = 'anteater'">Change value</button>
     <button data-testid="controlledSearch" @click="search = 'eat'">Change search value</button>
 
-    <Command
-      :should-filter="shouldFilter"
-      v-model:value="value"
-      :filter="filter"
-    >
+    <Command :should-filter="shouldFilter" v-model:value="value" :filter="filter">
       <Command.Input placeholder="Search…" v-model="search" />
       <Command.List>
         <Command.Item>ant</Command.Item>

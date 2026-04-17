@@ -3,7 +3,9 @@ import { ref, onMounted } from 'vue'
 import { Command } from 'cmdk-vue'
 
 const open = ref(false)
-onMounted(() => { open.value = true })
+onMounted(() => {
+  open.value = true
+})
 </script>
 
 <template>
