@@ -1,6 +1,19 @@
 {
   "name": "cmdk-vue",
   "version": "1.0.0",
+  "description": "Fast, composable, unstyled command menu for Vue 3. A faithful port of cmdk by Paco Coursey.",
+  "keywords": [
+    "vue",
+    "vue3",
+    "command",
+    "command-menu",
+    "cmdk",
+    "combobox",
+    "accessible",
+    "headless",
+    "unstyled",
+    "palette"
+  ],
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
